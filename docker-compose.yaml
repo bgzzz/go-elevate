@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+   go-elevate:
+        image: go-elevate:latest
+        environment:
+            SERVER_ADDR: :1323 
+            LOGLEVEL: "debug"
+        command: /go-elevate 
+        ports:
+            - 1323:1323
+        restart: unless-stopped
