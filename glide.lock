@@ -1,8 +1,12 @@
 hash: 3fa656a7b5677c7e6a40bed531befefdaf917d8976380486a77d07eed2c35012
-updated: 2018-12-20T02:23:09.358377866+03:00
+updated: 2018-12-27T00:12:50.25075411+03:00
 imports:
 - name: github.com/apeyroux/gosm
   version: 8f3e37d8629ea38552d75d4bd6ea19c5975b7c3b
+- name: github.com/bgzzz/go-elevate
+  version: b58f08043bed52b147dddd6a143c5a02729802e6
+  subpackages:
+  - mercator
 - name: github.com/dgrijalva/jwt-go
   version: 3af4c746e1c248ee8491a3e0c6f7a9cd831e95f8
 - name: github.com/konsorten/go-windows-terminal-sequences
@@ -23,7 +27,7 @@ imports:
 - name: github.com/mattn/go-isatty
   version: 3fb116b820352b7f0c281308a4d6250c22d94e27
 - name: github.com/sirupsen/logrus
-  version: 2067ea4241cec716fbd0ac90f42f339f963bff92
+  version: 6180652bb05834ae178c93911ddae14b689408b7
 - name: github.com/valyala/bytebufferpool
   version: cdfbe9377474227bb42120c1e22fd4433e7f69bf
 - name: github.com/valyala/fasttemplate
@@ -35,8 +39,20 @@ imports:
   - acme/autocert
   - ssh/terminal
 - name: golang.org/x/sys
-  version: 074acd46bca67915925527c07849494d115e7c43
+  version: b4a75ba826a64a70990f11a225237acd6ef35c9f
   subpackages:
   - unix
   - windows
-testImports: []
+testImports:
+- name: github.com/davecgh/go-spew
+  version: d8f796af33cc11cb798c1aaeb27a4ebc5099927d
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: 5d4384ee4fb2527b0a1256a821ebfc92f91efefc
+  subpackages:
+  - difflib
+- name: github.com/stretchr/testify
+  version: 660f15d67dbb878de0d9d79894f728d691c91b91
+  subpackages:
+  - assert
