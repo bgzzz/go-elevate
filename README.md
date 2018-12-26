@@ -37,9 +37,6 @@ $ make dock-compose
 
 ## TODO
 
-1. unit and integration tests
-1. config refactor 
 1. HTTP doc for API 
 1. caching of the request (redis) or may be even save in heights in regular DB (AWS tiles might be shut down)
 1. support of different coordinate types (radians, degrees ... etc.) 
-1. differrent algos for height calculation (median, avg, supported (bases on radians to EPSG:3857 convertion error) )

@@ -9,7 +9,7 @@ import (
 )
 
 // initLogging sets up logger with
-// apropriate logging level
+// appropriate logging level
 func initLogging(lvl log.Level) {
 
 	// Log as JSON instead of the default ASCII formatter.
@@ -28,7 +28,7 @@ func initLogging(lvl log.Level) {
 
 }
 
-// LogRequest is middleware function that logs handlers perofmrance
+// LogRequest is middleware function that logs handlers performance
 // and outputs req/rsp meta data
 func LogRequest(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) (err error) {
@@ -38,7 +38,7 @@ func LogRequest(next echo.HandlerFunc) echo.HandlerFunc {
 		res := c.Response()
 		start := time.Now()
 
-		// whait while handler will be processed
+		// wait while handler will be processed
 		if err = next(c); err != nil {
 			log.Error(err.Error())
 			c.Error(err)

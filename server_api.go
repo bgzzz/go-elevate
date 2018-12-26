@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo"
 )
@@ -11,16 +12,16 @@ const (
 	MarshallingError = iota
 	SubrequestsFailed
 	HeightCalculationFailed
+	TimerExpired
 )
 
-//statuses string
+// limit the request in time
 const (
-	ERROR_STATUS   = "ERROR"
-	SUCCESS_STATUS = "SUCCESS"
+	TIMER_DURATION_SEC = 5
 )
 
-//Coord holds Longitude and Latitude values
-//Is used in as a parameter in requests
+// Coord holds Longitude and Latitude values
+// It is used as a parameter in requests
 type Coord struct {
 
 	// Longitude coordinate.
@@ -30,18 +31,18 @@ type Coord struct {
 	Lat float64 `json:"lat" query:"lat"`
 }
 
-//HeightItem a struct that holds information about point
-//coordinate and ground height
+// HeightItem a struct that represents information about
+// coordinates of the point and ground height
 type HeightItem struct {
 	Point  Coord   `json:"point"`
 	Height float64 `json:"height"`
 
-	//Item specififc error refers to subreqeusts
+	//Item specific error refers to sub requests
 	Error *ValidationError `json:"error,omitempty"`
 }
 
-//HeightResponse is used on response of the API and holds list of
-//HeightItem and optionally error descriptor
+// HeightResponse is used on response of the API and holds list of
+// HeightItem and optionally error descriptor
 type HeightResponse struct {
 	Items []HeightItem `json:"items,omitempty"`
 
@@ -49,82 +50,56 @@ type HeightResponse struct {
 	Error *ValidationError `json:"error,omitempty"`
 }
 
-//HeightRequest is used on request of the API and holds list of
-//coords that needs calculation of height
+// HeightRequest is used on request of the API and holds list of
+// coords that needs calculation of the height
 type HeightRequest struct {
 	Coords []*Coord `json:"coords"`
 }
 
 // A ValidationError is a response to represent error
-//
-// trololo:response validationError
 type ValidationError struct {
 	Code        int    `json:"items"`
 	Description string `json:"description"`
 }
 
 // GetOneHeightHandler handles the functionality on HTTP
-// request for ground heigth of one particular point
+// request for ground height of one particular point
 // Response:
 //        200: heighResponse
 //		  400: validationError
 func GetOneHeightHandler(c echo.Context) error {
-	var rsp HeightResponse
-
 	coord := new(Coord)
 	if err := c.Bind(coord); err != nil {
-		return c.JSON(http.StatusBadRequest, HeightResponse{
-			Error: &ValidationError{
-				Code:        MarshallingError,
-				Description: err.Error(),
-			},
-		})
+		return ResponseError(c, MarshallingError,
+			err.Error())
 	}
 
-	rsp = GetRsp([]*Coord{coord})
-
-	status := http.StatusOK
-	if rsp.Error != nil {
-		status = http.StatusBadRequest
-	}
-
-	return c.JSON(status, rsp)
+	return ResponseHeights(c, []*Coord{coord})
 }
 
 // GetMultipleHeightsHandler handles the functionality on HTTP
-// request for ground heigth of multiple particular point
+// request for ground height of multiple particular point
 // Response:
 //        200: heighResponse
 //		  400: validationError
 func GetMultipleHeightsHandler(c echo.Context) error {
-	var rsp HeightResponse
-
 	req := new(HeightRequest)
 	if err := c.Bind(req); err != nil {
-		return c.JSON(http.StatusBadRequest, HeightResponse{
-			Error: &ValidationError{
-				Code:        MarshallingError,
-				Description: err.Error(),
-			},
-		})
+		return ResponseError(c, MarshallingError,
+			err.Error())
 	}
 
-	rsp = GetRsp(req.Coords)
-
-	status := http.StatusOK
-	if rsp.Error != nil {
-		status = http.StatusBadRequest
-	}
-
-	return c.JSON(status, rsp)
+	return ResponseHeights(c, req.Coords)
 }
 
+// GetRsp return response based on the requested coordinates
 func GetRsp(coords []*Coord) HeightResponse {
 	var rsp HeightResponse
 
 	nReqHeights := len(coords)
 	msgr := make(chan HeightItem)
 
+	timer := time.NewTimer(time.Second * time.Duration(TIMER_DURATION_SEC))
 	// sending tasks for request and calculation
 	for i := 0; i < nReqHeights; i++ {
 		go GetHeight(coords[i], msgr)
@@ -145,8 +120,36 @@ func GetRsp(coords []*Coord) HeightResponse {
 				rsp.Items = append(rsp.Items, item)
 				nReqHeights--
 			}
+		case <-timer.C:
+			rsp.Error = &ValidationError{
+				Code:        TimerExpired,
+				Description: string(TIMER_DURATION_SEC) + " sec expired",
+			}
 		}
 	}
 
 	return rsp
+}
+
+// ResponseError sends error structure as HTTP response
+func ResponseError(c echo.Context,
+	errCode int, description string) error {
+	return c.JSON(http.StatusBadRequest, HeightResponse{
+		Error: &ValidationError{
+			Code:        errCode,
+			Description: description,
+		},
+	})
+}
+
+// ResponseHeights sends heights response structure as HTTP response
+func ResponseHeights(c echo.Context, coords []*Coord) error {
+	rsp := GetRsp(coords)
+
+	status := http.StatusOK
+	if rsp.Error != nil {
+		status = http.StatusBadRequest
+	}
+
+	return c.JSON(status, rsp)
 }

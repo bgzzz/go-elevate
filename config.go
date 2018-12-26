@@ -8,28 +8,28 @@ import (
 
 //default consts
 const (
-	AWS_PREFIX    = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/"
+	// AWS_PREFIX    = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/"
 	SERVER_ADDR   = ":1323"
 	DEF_LOG_LEVEL = "debug"
 )
 
-//Config is object that holds needed paths for req sending
-//and API serving and logging level
+// Config is object that holds needed paths for req sending
+// and API serving and logging level
 type Config struct {
-	AWSPrefix  string
+	// AWSPrefix  string
 	ServerAddr string
 	LogLevel   log.Level
 }
 
-//initConfig return config object that holds server paths
+// initConfig returns config object that holds server paths
 func initConfig() Config {
 	var cfg Config
 
-	cfg.AWSPrefix = os.Getenv("AWS_PREFIX")
-	if len(cfg.AWSPrefix) == 0 {
-		log.Warning("AWS_PREFIX set to default")
-		cfg.AWSPrefix = AWS_PREFIX
-	}
+	// cfg.AWSPrefix = os.Getenv("AWS_PREFIX")
+	// if len(cfg.AWSPrefix) == 0 {
+	// 	log.Warning("AWS_PREFIX set to default")
+	// 	cfg.AWSPrefix = AWS_PREFIX
+	// }
 
 	cfg.ServerAddr = os.Getenv("SERVER_ADDR")
 	if len(cfg.ServerAddr) == 0 {

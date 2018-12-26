@@ -1,5 +1,5 @@
 // go-elevate microservice for getting ground height
-// based on the requested coodrinates
+// based on the requested coordinates
 //
 //     Schemes: http, https
 //     Host: localhost
@@ -35,13 +35,3 @@ func main() {
 
 	e.Start(cfg.ServerAddr)
 }
-
-// test docker works
-// add docker compose s
-// test docker-compose works
-// add integration tests
-// readmes
-
-// add not url handler
-// add cache
-// add api doc

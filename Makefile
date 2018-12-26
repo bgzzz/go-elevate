@@ -12,4 +12,10 @@ dock-build:
 dock-compose: dock-build
 	docker-compose up
 
+test:
+	go test -v
+
+test-pkg: 
+	go test github.com/bgzzz/go-elevate/mercator -v
+
 #rest is for testing 
