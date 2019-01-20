@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -13,6 +14,11 @@ const (
 	SubrequestsFailed
 	HeightCalculationFailed
 	TimerExpired
+)
+
+//query keys
+const (
+	QUERY_COORDS_KEY = "coords"
 )
 
 // limit the request in time
@@ -62,27 +68,31 @@ type ValidationError struct {
 	Description string `json:"description"`
 }
 
-// GetOneHeightHandler handles the functionality on HTTP
-// request for ground height of one particular point
+// GetHeightsHandler handles the functionality on HTTP
+// request for ground height of multiple particular points
 // Response:
 //        200: heighResponse
 //		  400: validationError
-func GetOneHeightHandler(c echo.Context) error {
-	coord := new(Coord)
-	if err := c.Bind(coord); err != nil {
+func GetHeightsHandler(c echo.Context) error {
+
+	coordsQuery := c.Request().URL.Query().Get(QUERY_COORDS_KEY)
+
+	coords := []*Coord{}
+	err := json.Unmarshal([]byte(coordsQuery), &coords)
+	if err != nil {
 		return ResponseError(c, MarshallingError,
 			err.Error())
 	}
 
-	return ResponseHeights(c, []*Coord{coord})
+	return ResponseHeights(c, coords)
 }
 
-// GetMultipleHeightsHandler handles the functionality on HTTP
+// PostMultipleHeightsHandler handles the functionality on HTTP
 // request for ground height of multiple particular point
 // Response:
 //        200: heighResponse
 //		  400: validationError
-func GetMultipleHeightsHandler(c echo.Context) error {
+func PostMultipleHeightsHandler(c echo.Context) error {
 	req := new(HeightRequest)
 	if err := c.Bind(req); err != nil {
 		return ResponseError(c, MarshallingError,

@@ -5,12 +5,12 @@ microservice that gets ground height based on lat and lon coordinates
 
 coordinates are in radians 
 
-1. /height?lon=86.922623&lat=27.986065 for single coord request 
+1. GET /heights?coords=%5B%7B%22lon%22%3A138.72905%2C%22lat%22%3A35.360638%7D%2C%7B%22lat%22%3A27.986065%2C%22lon%22%3A86.922623%7D%5D
 ```
-$ curl '127.0.0.1:1323/height?lat=27.986065&lon=86.22623'
+$ curl -G -v "http://localhost:1323/heights" --data-urlencode 'coords=[{"lon":138.72905,"lat":35.360638},{"lat":27.986065,"lon":86.922623}]'
 ```
 
-2. /heights
+2. POST /heights
 ```
 curl -X POST -H "Content-Type: application/json" \
 -d  '{"coords":[{"lon":138.72905,"lat":35.360638},{"lat":27.986065,"lon":86.922623}]}' \

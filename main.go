@@ -28,10 +28,11 @@ func main() {
 	e.Use(LogRequest)
 	e.Use(middleware.Recover())
 
-	e.GET("/height", GetOneHeightHandler)
+	//to use this API you have to encode your requests
+	e.GET("/heights", GetHeightsHandler)
 	//decided to make it as POST because it is more human readable
 	//while doing manual requests
-	e.POST("/heights", GetMultipleHeightsHandler)
+	e.POST("/heights", PostMultipleHeightsHandler)
 
 	e.Start(cfg.ServerAddr)
 }
