@@ -47,7 +47,7 @@ func SendMercatorReq(m *mercator.Mercator) (image.Image, error) {
 
 // GetHeight return HeightItem over channel
 // HeightItem is calculated via evaluation of requested png file
-func GetHeight(coord *Coord, res chan<- HeightItem) {
+func GetHeight(coord Coord, res chan<- HeightItem) {
 	var err error
 	var vErr *ValidationError
 
@@ -79,7 +79,7 @@ func GetHeight(coord *Coord, res chan<- HeightItem) {
 
 	//send message back
 	res <- HeightItem{
-		Point:  *coord,
+		Point:  coord,
 		Height: height,
 		Error:  vErr,
 	}

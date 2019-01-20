@@ -18,7 +18,7 @@ func TestCalculateHeight(t *testing.T) {
 	// sending tasks for request and calculation
 	msgr := make(chan HeightItem)
 
-	go GetHeight(&Coord{Lat: benchmarkLat,
+	go GetHeight(Coord{Lat: benchmarkLat,
 		Lon: benchmarkLong,
 	}, msgr)
 

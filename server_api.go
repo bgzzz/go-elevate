@@ -13,7 +13,8 @@ const (
 	MARSHALLING_ERROR                = "Marshalling failed"
 	SUBREQUESTS_FAILED_ERROR         = "Subrequests failed"
 	HEIGHTS_CALCULATION_FAILED_ERROR = "Heights calculation failed"
-	TIME_EXPIRED_ERROR               = "Timer expired error "
+	TIME_EXPIRED_ERROR               = "Timer expired error"
+	INTERNAL_ERROR                   = "Internal server error"
 )
 
 //query keys
@@ -106,13 +107,22 @@ func PostMultipleHeightsHandler(c echo.Context) error {
 func GetRsp(coords []*Coord) HeightResponse {
 	var rsp HeightResponse
 
-	nReqHeights := len(coords)
 	msgr := make(chan HeightItem)
 
 	timer := time.NewTimer(time.Second * time.Duration(TIMER_DURATION_SEC))
+
+	// this is done to avoid making requests with same lat lon
+	coordsHeightMap := map[Coord]HeightItem{}
+	for i := range coords {
+
+		coordsHeightMap[*coords[i]] = HeightItem{}
+	}
+
+	nReqHeights := len(coordsHeightMap)
+
 	// sending tasks for request and calculation
-	for i := 0; i < nReqHeights; i++ {
-		go GetHeight(coords[i], msgr)
+	for k, _ := range coordsHeightMap {
+		go GetHeight(k, msgr)
 	}
 
 	//receiving the results
@@ -127,7 +137,7 @@ func GetRsp(coords []*Coord) HeightResponse {
 					}
 				}
 
-				rsp.Items = append(rsp.Items, item)
+				coordsHeightMap[item.Point] = item
 				nReqHeights--
 			}
 		case <-timer.C:
@@ -135,7 +145,14 @@ func GetRsp(coords []*Coord) HeightResponse {
 				Code:        TIME_EXPIRED_ERROR,
 				Description: string(TIMER_DURATION_SEC) + " sec expired",
 			}
+			return rsp
 		}
+	}
+
+	// making array of HeighItems in the same order as request
+	for i := range coords {
+		v := coordsHeightMap[*coords[i]]
+		rsp.Items = append(rsp.Items, v)
 	}
 
 	return rsp
