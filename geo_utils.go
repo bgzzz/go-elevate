@@ -45,7 +45,8 @@ func SendMercatorReq(m *mercator.Mercator) (image.Image, error) {
 	return img, nil
 }
 
-// GetHeight sends HeightItem while receive png and calculate height
+// GetHeight return HeightItem over channel
+// HeightItem is calculated via evaluation of requested png file
 func GetHeight(coord *Coord, res chan<- HeightItem) {
 	var err error
 	var vErr *ValidationError
@@ -53,7 +54,7 @@ func GetHeight(coord *Coord, res chan<- HeightItem) {
 	//calculate coords in format
 	m := mercator.NewMercatorWithLatLong(coord.Lat, coord.Lon, ZOOM_LEVEL)
 
-	// sending request to height cloud
+	// sending request to cloud to get png file encoding height
 	img, err := SendMercatorReq(m)
 
 	//calculate height
