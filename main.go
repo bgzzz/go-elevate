@@ -16,6 +16,7 @@ package main
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -34,5 +35,8 @@ func main() {
 	//while doing manual requests
 	e.POST("/heights", PostMultipleHeightsHandler)
 
-	e.Start(cfg.ServerAddr)
+	err := e.Start(cfg.ServerAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

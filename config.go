@@ -33,13 +33,13 @@ func initConfig() Config {
 
 	cfg.ServerAddr = os.Getenv("SERVER_ADDR")
 	if len(cfg.ServerAddr) == 0 {
-		log.Warning("SERVER_ADDR set to default")
+		log.Debug("SERVER_ADDR set to default")
 		cfg.ServerAddr = SERVER_ADDR
 	}
 
 	tmp := os.Getenv("LOG_LEVEL")
 	if len(tmp) == 0 {
-		log.Warning("LOG_LEVEL set to default")
+		log.Debug("LOG_LEVEL set to default")
 		tmp = DEF_LOG_LEVEL
 	}
 

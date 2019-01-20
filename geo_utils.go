@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bytes"
+	"image"
 	"image/png"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"path"
 	"strconv"
@@ -18,53 +18,62 @@ const (
 	FILE_RES       = ".png"
 )
 
-// GetHeight sends HeightItem while receive png and calculate height
-func GetHeight(coord *Coord, res chan<- HeightItem) {
-	var height = 0.0
-	var err error
-	var vErr *ValidationError
-
-	//calculate coords in format
-	m := mercator.NewMercatorWithLatLong(coord.Lat, coord.Lon, ZOOM_LEVEL)
-
-	// sending request
-
+// SendMercatorReq send request to get png file form the cloud
+// request URL is made via mercator coordinates
+func SendMercatorReq(m *mercator.Mercator) (image.Image, error) {
 	rsp, err := http.Get(PNG_URL_PREFIX +
 		path.Join(strconv.Itoa(int(m.Zoom)), strconv.Itoa(int(m.Tile.X)),
 			strconv.Itoa(int(m.Tile.Y))+FILE_RES))
 
 	if err != nil {
 		log.Error(err.Error())
-	} else {
-		log.Debug(rsp.Request.URL.String())
-
-		defer rsp.Body.Close()
-
-		body_byte, err := ioutil.ReadAll(rsp.Body)
-		if err != nil {
-			panic(err)
-		}
-
-		//calculating height
-		height, err = calculateHeight(body_byte, m.PixelOnTile)
-
-		if err != nil {
-			log.Error(err.Error())
-		} else {
-			log.WithFields(log.Fields{"lon": coord.Lon,
-				"lat":    coord.Lat,
-				"zoom":   m.Zoom,
-				"height": height}).Debug("height calculated")
-		}
+		return nil, err
 	}
 
+	log.Debug(rsp.Request.URL.String())
+
+	var r io.Reader
+	r = rsp.Body
+	defer rsp.Body.Close()
+
+	img, err := png.Decode(r)
+	if err != nil {
+		log.Error(err.Error())
+		return nil, err
+	}
+
+	return img, nil
+}
+
+// GetHeight sends HeightItem while receive png and calculate height
+func GetHeight(coord *Coord, res chan<- HeightItem) {
+	var err error
+	var vErr *ValidationError
+
+	//calculate coords in format
+	m := mercator.NewMercatorWithLatLong(coord.Lat, coord.Lon, ZOOM_LEVEL)
+
+	// sending request to height cloud
+	img, err := SendMercatorReq(m)
+
+	//calculate height
+	var height = 0.0
+	if err == nil {
+		height, err = calculateHeight(img, m.PixelOnTile)
+	}
+
+	//check for errors
 	//construct the error if needed
 	if err != nil {
 		vErr = &ValidationError{
 			Code:        HEIGHTS_CALCULATION_FAILED_ERROR,
 			Description: err.Error(),
 		}
-
+	} else {
+		log.WithFields(log.Fields{"lon": coord.Lon,
+			"lat":    coord.Lat,
+			"zoom":   m.Zoom,
+			"height": height}).Debug("height calculated")
 	}
 
 	//send message back
@@ -77,14 +86,7 @@ func GetHeight(coord *Coord, res chan<- HeightItem) {
 }
 
 // calculateHeight return height based on png response body
-func calculateHeight(body []byte, pixel mercator.MercatorCoord) (float64, error) {
-
-	read := bytes.NewReader(body)
-	img, err := png.Decode(read)
-	if err != nil {
-		log.Error(err.Error())
-		return 0.0, err
-	}
+func calculateHeight(img image.Image, pixel mercator.MercatorCoord) (float64, error) {
 
 	color := img.At(int(pixel.X), int(pixel.Y))
 	r, g, b, _ := color.RGBA()
