@@ -25,12 +25,6 @@ type Config struct {
 func initConfig() Config {
 	var cfg Config
 
-	// cfg.AWSPrefix = os.Getenv("AWS_PREFIX")
-	// if len(cfg.AWSPrefix) == 0 {
-	// 	log.Warning("AWS_PREFIX set to default")
-	// 	cfg.AWSPrefix = AWS_PREFIX
-	// }
-
 	cfg.ServerAddr = os.Getenv("SERVER_ADDR")
 	if len(cfg.ServerAddr) == 0 {
 		log.Debug("SERVER_ADDR set to default")
