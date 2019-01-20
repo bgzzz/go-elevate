@@ -98,23 +98,20 @@ func handlerAssert(c echo.Context,
 	}
 }
 
-func TestOneReq(t *testing.T) {
-	// Setup
-	//?lon=138.72905&lat=35.360638
+func TestGetReq(t *testing.T) {
 	q := make(url.Values)
-	q.Set("lon", "138.72905")
-	q.Set("lat", "35.360638")
-	req := httptest.NewRequest(http.MethodGet, `/height?`+q.Encode(), nil)
+	q.Set(QUERY_COORDS_KEY, `[{"lon":138.72905, "lat":35.360638}]`)
+	req := httptest.NewRequest(http.MethodGet, `/heights?`+q.Encode(), nil)
 
 	c, rec := prepareContext(req, t)
 
 	expected := getExpectedRsp(singleCoordRsp, t)
 
-	handlerAssert(c, rec, expected, GetOneHeightHandler, t)
+	handlerAssert(c, rec, expected, GetHeightsHandler, t)
 
 }
 
-func TestMultipleReq(t *testing.T) {
+func TestPostMultipleReq(t *testing.T) {
 	// Setup
 	req := httptest.NewRequest(http.MethodPost, "/heights",
 		strings.NewReader(multipleCoordsReq))
@@ -124,6 +121,6 @@ func TestMultipleReq(t *testing.T) {
 
 	expected := getExpectedRsp(multipleCoordsRsp, t)
 
-	handlerAssert(c, rec, expected, GetMultipleHeightsHandler, t)
+	handlerAssert(c, rec, expected, PostMultipleHeightsHandler, t)
 
 }
