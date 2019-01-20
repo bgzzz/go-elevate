@@ -37,13 +37,13 @@ func initConfig() Config {
 		cfg.ServerAddr = SERVER_ADDR
 	}
 
-	tmp := os.Getenv("LOG_LEVEL")
-	if len(tmp) == 0 {
+	lvlStr := os.Getenv("LOG_LEVEL")
+	if len(lvlStr) == 0 {
 		log.Debug("LOG_LEVEL set to default")
-		tmp = DEF_LOG_LEVEL
+		lvlStr = DEF_LOG_LEVEL
 	}
 
-	lvl, err := log.ParseLevel(tmp)
+	lvl, err := log.ParseLevel(lvlStr)
 	if err != nil {
 		panic(err)
 	}
