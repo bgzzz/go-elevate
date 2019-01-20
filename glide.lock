@@ -1,18 +1,12 @@
-hash: 3fa656a7b5677c7e6a40bed531befefdaf917d8976380486a77d07eed2c35012
-updated: 2018-12-27T00:12:50.25075411+03:00
+hash: 0eb3f08ca2ef361b7f4fd36bd47cfa69fd0ac1bc145f2061c846f31bc56f5a08
+updated: 2019-01-20T15:04:22.407660252+03:00
 imports:
-- name: github.com/apeyroux/gosm
-  version: 8f3e37d8629ea38552d75d4bd6ea19c5975b7c3b
-- name: github.com/bgzzz/go-elevate
-  version: b58f08043bed52b147dddd6a143c5a02729802e6
-  subpackages:
-  - mercator
 - name: github.com/dgrijalva/jwt-go
   version: 3af4c746e1c248ee8491a3e0c6f7a9cd831e95f8
 - name: github.com/konsorten/go-windows-terminal-sequences
   version: 5c8c8bd35d3832f5d134ae1e1e375b69a4d25242
 - name: github.com/labstack/echo
-  version: 3f8b45c8d0dd840198a6b24b3393e5ec553dcb85
+  version: 7867fce6ce3e8da711e49256e14410ca46d7ecc0
   subpackages:
   - middleware
 - name: github.com/labstack/gommon
@@ -27,19 +21,19 @@ imports:
 - name: github.com/mattn/go-isatty
   version: 3fb116b820352b7f0c281308a4d6250c22d94e27
 - name: github.com/sirupsen/logrus
-  version: 6180652bb05834ae178c93911ddae14b689408b7
+  version: 659e47340eafb203ad3c2ce461023fde46356615
 - name: github.com/valyala/bytebufferpool
   version: cdfbe9377474227bb42120c1e22fd4433e7f69bf
 - name: github.com/valyala/fasttemplate
   version: dcecefd839c4193db0d35b88ec65b4c12d360ab0
 - name: golang.org/x/crypto
-  version: 505ab145d0a99da450461ae2c1a9f6cd10d1f447
+  version: ff983b9c42bc9fbf91556e191cc8efb585c16908
   subpackages:
   - acme
   - acme/autocert
   - ssh/terminal
 - name: golang.org/x/sys
-  version: b4a75ba826a64a70990f11a225237acd6ef35c9f
+  version: 11f53e03133963fb11ae0588e08b5e0b85be8be5
   subpackages:
   - unix
   - windows
@@ -53,6 +47,6 @@ testImports:
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: 660f15d67dbb878de0d9d79894f728d691c91b91
+  version: 363ebb24d041ccea8068222281c2e963e997b9dc
   subpackages:
   - assert

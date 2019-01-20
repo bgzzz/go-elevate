@@ -19,7 +19,15 @@ curl -X POST -H "Content-Type: application/json" \
 
 ## How to compile 
 
+Resolver dependencies first
+
 ```
+$ glide install
+```
+
+And then compile the code
+
+``` 
 $ make
 ```
 

@@ -1,6 +1,5 @@
 package: github.com/go-elevate
 import:
-- package: github.com/apeyroux/gosm
 - package: github.com/labstack/echo
   subpackages:
   - middleware
