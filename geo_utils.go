@@ -61,7 +61,7 @@ func GetHeight(coord *Coord, res chan<- HeightItem) {
 	//construct the error if needed
 	if err != nil {
 		vErr = &ValidationError{
-			Code:        HeightCalculationFailed,
+			Code:        HEIGHTS_CALCULATION_FAILED_ERROR,
 			Description: err.Error(),
 		}
 

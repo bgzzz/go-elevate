@@ -10,10 +10,10 @@ import (
 
 //errors
 const (
-	MarshallingError = iota
-	SubrequestsFailed
-	HeightCalculationFailed
-	TimerExpired
+	MARSHALLING_ERROR                = "Marshalling failed"
+	SUBREQUESTS_FAILED_ERROR         = "Subrequests failed"
+	HEIGHTS_CALCULATION_FAILED_ERROR = "Heights calculation failed"
+	TIME_EXPIRED_ERROR               = "Timer expired error "
 )
 
 //query keys
@@ -64,7 +64,7 @@ type HeightRequest struct {
 
 // A ValidationError is a response to represent error
 type ValidationError struct {
-	Code        int    `json:"items"`
+	Code        string `json:"code"`
 	Description string `json:"description"`
 }
 
@@ -80,7 +80,7 @@ func GetHeightsHandler(c echo.Context) error {
 	coords := []*Coord{}
 	err := json.Unmarshal([]byte(coordsQuery), &coords)
 	if err != nil {
-		return ResponseError(c, MarshallingError,
+		return ResponseError(c, MARSHALLING_ERROR,
 			err.Error())
 	}
 
@@ -95,7 +95,7 @@ func GetHeightsHandler(c echo.Context) error {
 func PostMultipleHeightsHandler(c echo.Context) error {
 	req := new(HeightRequest)
 	if err := c.Bind(req); err != nil {
-		return ResponseError(c, MarshallingError,
+		return ResponseError(c, MARSHALLING_ERROR,
 			err.Error())
 	}
 
@@ -122,7 +122,7 @@ func GetRsp(coords []*Coord) HeightResponse {
 			{
 				if item.Error != nil {
 					rsp.Error = &ValidationError{
-						Code:        SubrequestsFailed,
+						Code:        SUBREQUESTS_FAILED_ERROR,
 						Description: item.Error.Description,
 					}
 				}
@@ -132,7 +132,7 @@ func GetRsp(coords []*Coord) HeightResponse {
 			}
 		case <-timer.C:
 			rsp.Error = &ValidationError{
-				Code:        TimerExpired,
+				Code:        TIME_EXPIRED_ERROR,
 				Description: string(TIMER_DURATION_SEC) + " sec expired",
 			}
 		}
@@ -143,7 +143,7 @@ func GetRsp(coords []*Coord) HeightResponse {
 
 // ResponseError sends error structure as HTTP response
 func ResponseError(c echo.Context,
-	errCode int, description string) error {
+	errCode string, description string) error {
 	return c.JSON(http.StatusBadRequest, HeightResponse{
 		Error: &ValidationError{
 			Code:        errCode,
