@@ -13,23 +13,22 @@ type MercatorCoord struct {
 	Y int64
 }
 
+type MercatorWorld struct {
+	X float64
+	Y float64
+}
+
 type Mercator struct {
-	Latitude  float64
-	Longitude float64
-	Zoom      uint
-	World     struct {
-		X float64
-		Y float64
-	}
+	Latitude    float64
+	Longitude   float64
+	Zoom        uint
+	World       MercatorWorld
 	Pixel       MercatorCoord
 	Tile        MercatorCoord
 	PixelOnTile MercatorCoord
 }
 
-func (m *Mercator) Deg2num() (world struct {
-	X float64
-	Y float64
-}, pixel MercatorCoord,
+func (m *Mercator) Deg2num() (world MercatorWorld, pixel MercatorCoord,
 	tile MercatorCoord, pixelOnTile MercatorCoord) {
 
 	var siny = math.Sin(m.Latitude * math.Pi / 180)
@@ -40,10 +39,7 @@ func (m *Mercator) Deg2num() (world struct {
 	// about a third of a tile past the edge of the world tile.
 	siny = math.Min(math.Max(siny, -0.9999), 0.9999)
 
-	world = struct {
-		X float64
-		Y float64
-	}{
+	world = MercatorWorld{
 		X: TILE_SIZE * (0.5 + m.Longitude/360),
 		Y: TILE_SIZE * (0.5 - math.Log((1+siny)/(1-siny))/(4*math.Pi)),
 	}

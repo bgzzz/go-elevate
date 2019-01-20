@@ -2,7 +2,12 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"testing"
+)
+
+const (
+	Epsilon = 1.0
 )
 
 // Benchmark data is taken from here
@@ -31,7 +36,8 @@ func TestCalculateHeight(t *testing.T) {
 
 	// 1m max error
 	// error might be due to non accurate tail of the lat and long
-	if int(item.Height) != benchmarkHeight {
+	difference := float64(benchmarkHeight) - item.Height
+	if math.Abs(difference) > Epsilon {
 		t.Log("Height is not equal to benchmark")
 		t.Fail()
 	}
